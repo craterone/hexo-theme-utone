@@ -3,10 +3,10 @@ menu:
   home: /
   archives: /archives
   about: /about
-  RSS: /atom.xml
+  # RSS: /atom.xml
 
 #logo
-logo: /images/logo.png
+logo: /images/taiji.png
 
 # favicon
 favicon: /images/favicon.ico
@@ -15,7 +15,7 @@ favicon: /images/favicon.ico
 site_search: true
 
 # rss
-rss: /atom.xml
+# rss: /atom.xml
 
 # search post url
 search_url: /search.xml

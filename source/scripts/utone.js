@@ -1,5 +1,8 @@
 'use strict'
 
+
+
+
 let scroll = (function() {
   /**
    * 滚动固定左侧栏
@@ -80,6 +83,8 @@ let siteSearch = (function() {
     _containerDom.classList.add('filter')
     // 页面禁止滚动
     _htmlDom.classList.add('overflow_hidden')
+
+    _searchInputDom.focus();
   }
   function hidePop() {
     // 隐藏
@@ -148,7 +153,7 @@ let siteSearch = (function() {
   }
 
   let _temp = `<li>
-        <a href="{HREF}">
+        <a href="/{HREF}">
         <div class="search-title">{TITLE}</div>
         <div class="search-date">{DATE}</div>
         <div class="search-tag">{TAG}</div>
@@ -174,32 +179,10 @@ let siteSearch = (function() {
     )
   }
 
-  /**
-   * 消抖
-   * 当调用函数n秒后，才会执行该动作，若在这n秒内又调用该函数则将取消前一次并重新计算执行时间
-   * @param {*} fn
-   * @param {*} delay
-   */
-  function debounce(fn, delay) {
-    let _this = this,
-      timer = null
-
-    return function(e) {
-      if (timer) {
-        clearTimeout(timer)
-        timer = setTimeout(function() {
-          fn.call(_this, e.target.value)
-        }, delay)
-      } else {
-        timer = setTimeout(function() {
-          fn.call(_this, e.target.value)
-        }, delay)
-      }
-    }
-  }
-
   // 尝试获取数据
-  function tryInnerHTML(key) {
+  function tryInnerHTML(event) {
+    // console.log(event.data);
+    let key = _searchInputDom.value.trim();
     if (key) {
       // 尝试获取数据
       tryPost().then(posts => {
@@ -215,14 +198,14 @@ let siteSearch = (function() {
               let _tag = ''
               if (result[i].tags.length) {
                 for (let j = 0; j < result[i].tags.length; j++) {
-                  _tag += `<a href="${result[i].tags[j].permalink}">#${
+                  _tag += `#${
                     result[i].tags[j].name
-                  }</a> &nbsp&nbsp`
+                  } &nbsp&nbsp`
                 }
               }
 
               _li += _temp
-                .replace('{HREF}', result[i].permalink)
+                .replace('{HREF}', result[i].path)
                 .replace('{TITLE}', result[i].title)
                 .replace('{TAG}', _tag)
                 .replace('{DATE}', result[i].date)
@@ -238,9 +221,17 @@ let siteSearch = (function() {
     }
   }
 
+
+  function keydown(e){
+    if(e.keyCode == 27){
+      hidePop();
+    }
+  }
+
   // 监听input 事件，并发送POST请求，获取结果
   function inputChange() {
-    _searchInputDom.addEventListener('input', debounce(tryInnerHTML, 1000))
+    _searchInputDom.addEventListener('keydown', keydown);
+    _searchInputDom.addEventListener('input', tryInnerHTML)
   }
 
   // 绑定点击事件
